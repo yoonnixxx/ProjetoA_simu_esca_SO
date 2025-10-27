@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "name": "Debug (g++)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/simulador",
+      "args": ["--config", "config_exemplo.txt", "--mode", "run"],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe",
+      "preLaunchTask": "build (g++)"
+    }
+  ]
+}
