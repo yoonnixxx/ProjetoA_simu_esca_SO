@@ -5,9 +5,20 @@
       "label": "build (g++)",
       "type": "shell",
       "command": "g++",
-      "args": ["-std=c++17", "-O2", "-Wall", "-Wextra", "-o", "simulador", "main.cpp"],
-      "group": { "kind": "build", "isDefault": true },
-      "problemMatcher": ["$gcc"]
+      "args": [
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "main.cpp",
+        "-o",
+        "simulador"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Compila o projeto C++ usando g++"
     }
   ]
 }
