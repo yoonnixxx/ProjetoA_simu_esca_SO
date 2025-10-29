@@ -28,9 +28,9 @@ inline void show_processes(const std::vector<Process>& processes) {
     std::cout << "\nProcessos carregados:\n";
     for (const auto& p : processes) {
         std::cout << " - " << p.name
-                  << " | chegada: " << p.arrival_time
-                  << " | duracao: " << p.duration
-                  << " | prioridade: " << p.priority
+                  << " | Chegada: " << p.arrival_time
+                  << " | Duracao: " << p.duration
+                  << " | Prioridade: " << p.priority
                   << "\n";
     }
 }

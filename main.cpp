@@ -55,15 +55,19 @@ int main() {
     std::cout << "Algoritmo: " << algorithm << "\nQuantum: " << quantum << "\n";
     show_processes(processes);
 
-    if (algorithm == "FIFO") {
-        simulate_fifo(processes);
+    if (algorithm == "FIFO" || algorithm == "fifo") {
+    simulate_fifo(processes);
     } 
-    else if (algorithm == "RR" || algorithm == "RoundRobin" || algorithm == "ROUNDROBIN") {
-        simulate_rr(processes, quantum);
+    else if (algorithm == "SRTF" || algorithm == "srtf") {
+        simulate_srtf(processes);
+    } 
+    else if (algorithm == "PRIOP" || algorithm == "PRIOp" || algorithm == "priop") {
+        simulate_priority_preemptive(processes, quantum);
     } 
     else {
         std::cout << "\nAlgoritmo não reconhecido.\n";
     }
+
 
     return 0;
 }
