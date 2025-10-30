@@ -2,22 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug (g++)",
+      "name": "Debug Simulador (g++.exe + gdb)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/simulador",
-      "args": [
-        "--config",
-        "config_exemplo.txt",
-        "--mode",
-        "run"
-      ],
-      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/simulador.exe",
+      "args": ["--config", "config_exemplo.txt", "--mode", "run"],
       "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
       "MIMode": "gdb",
-      "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe",
-      "preLaunchTask": "build (g++)",
-      "console": "integratedTerminal"
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        { "text": "-enable-pretty-printing", "description": "Enable pretty printing", "ignoreFailures": true }
+      ]
     }
   ]
 }

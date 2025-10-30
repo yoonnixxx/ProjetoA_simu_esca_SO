@@ -1,33 +1,35 @@
 #ifndef PROCESS_HPP
 #define PROCESS_HPP
 
-#include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
+#include <iostream>
 
 struct Process {
-    std::string name;
-    std::string color;
-    int arrival_time;
-    int duration;
-    int priority;
-    std::string dependency;
+    // Campos lidos do arquivo de configuração
+    std::string id;           // ex.: "A", "B"...
+    std::string color;        // ex.: "#1f77b4"
+    int arrival_time = 0;     // ingresso
+    int duration = 1;         // duração total
+    int priority = 1;         // prioridade (1=baixa ... n=alta, ou como você definiu)
+    std::string events = "-"; // lista de eventos (para Projeto A pode ficar "-")
 
-    // 🔹 Construtor padrão
-    Process() = default;
+    // Campos auxiliares de simulação
+    int remaining_time = 0;   // para SRTF/execução
+    int start_time = -1;      // primeiro tick de execução
+    int finish_time = -1;     // término
+    int waiting_time = 0;     // acumulado (se você calcular)
+    bool completed = false;
 
-    // 🔹 Construtor com parâmetros
-    Process(const std::string& n, const std::string& c,
-            int arr, int dur, int pri, const std::string& dep)
-        : name(n), color(c), arrival_time(arr),
-          duration(dur), priority(pri), dependency(dep) {}
+    // Opcional: trilha para Gantt (pares [start, end] por “fatias” executadas)
+    std::vector<std::pair<int,int>> slices;
 };
 
-// 🔹 Exibe os processos carregados
+// Helper opcional só para debug/estado
 inline void show_processes(const std::vector<Process>& processes) {
     std::cout << "\nProcessos carregados:\n";
     for (const auto& p : processes) {
-        std::cout << " - " << p.name
+        std::cout << " - " << p.id
                   << " | Chegada: " << p.arrival_time
                   << " | Duracao: " << p.duration
                   << " | Prioridade: " << p.priority
@@ -35,4 +37,4 @@ inline void show_processes(const std::vector<Process>& processes) {
     }
 }
 
-#endif
+#endif // PROCESS_HPP
