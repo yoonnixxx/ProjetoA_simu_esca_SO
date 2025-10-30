@@ -1,0 +1,44 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='380' height='260'>
+<style> text{font-family:monospace;font-size:12px;} </style>
+<rect x='230' y='30' width='100' height='20' fill='#1f77b4' stroke='black'/>
+<text x='10' y='45'>A</text>
+<rect x='50' y='70' width='40' height='20' fill='#FFD700' stroke='black'/>
+<text x='10' y='85'>B</text>
+<rect x='90' y='110' width='100' height='20' fill='#9467bd' stroke='black'/>
+<text x='10' y='125'>C</text>
+<rect x='110' y='150' width='20' height='20' fill='#2ca02c' stroke='black'/>
+<text x='10' y='165'>D</text>
+<rect x='190' y='190' width='40' height='20' fill='#d62728' stroke='black'/>
+<text x='10' y='205'>E</text>
+<line x1='50' y1='230' x2='360' y2='230' stroke='black'/>
+<line x1='50' y1='230' x2='50' y2='235' stroke='black'/>
+<text x='47' y='250'>0</text>
+<line x1='70' y1='230' x2='70' y2='235' stroke='black'/>
+<text x='67' y='250'>1</text>
+<line x1='90' y1='230' x2='90' y2='235' stroke='black'/>
+<text x='87' y='250'>2</text>
+<line x1='110' y1='230' x2='110' y2='235' stroke='black'/>
+<text x='107' y='250'>3</text>
+<line x1='130' y1='230' x2='130' y2='235' stroke='black'/>
+<text x='127' y='250'>4</text>
+<line x1='150' y1='230' x2='150' y2='235' stroke='black'/>
+<text x='147' y='250'>5</text>
+<line x1='170' y1='230' x2='170' y2='235' stroke='black'/>
+<text x='167' y='250'>6</text>
+<line x1='190' y1='230' x2='190' y2='235' stroke='black'/>
+<text x='187' y='250'>7</text>
+<line x1='210' y1='230' x2='210' y2='235' stroke='black'/>
+<text x='207' y='250'>8</text>
+<line x1='230' y1='230' x2='230' y2='235' stroke='black'/>
+<text x='227' y='250'>9</text>
+<line x1='250' y1='230' x2='250' y2='235' stroke='black'/>
+<text x='247' y='250'>10</text>
+<line x1='270' y1='230' x2='270' y2='235' stroke='black'/>
+<text x='267' y='250'>11</text>
+<line x1='290' y1='230' x2='290' y2='235' stroke='black'/>
+<text x='287' y='250'>12</text>
+<line x1='310' y1='230' x2='310' y2='235' stroke='black'/>
+<text x='307' y='250'>13</text>
+<line x1='330' y1='230' x2='330' y2='235' stroke='black'/>
+<text x='327' y='250'>14</text>
+</svg>

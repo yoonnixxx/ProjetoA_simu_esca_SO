@@ -4,70 +4,49 @@
 #include <vector>
 #include <string>
 #include <cctype>
+#include <limits>   // <- p/ numeric_limits
 #include "process.hpp"
 #include "scheduler.hpp"
 
-// =====================================================
-// Função auxiliar: converte string para upper
-// =====================================================
-std::string to_upper(std::string s) {
-    for (auto &c : s) c = std::toupper(c);
-    return s;
+// utilidades simples
+static std::string to_upper(std::string s) { for (auto &c : s) c = std::toupper(c); return s; }
+static std::string trim(const std::string &s) {
+    size_t a = s.find_first_not_of(" \t\r\n");
+    size_t b = s.find_last_not_of(" \t\r\n");
+    if (a == std::string::npos) return "";
+    return s.substr(a, b - a + 1);
 }
 
-// =====================================================
-// Função auxiliar: trim
-// =====================================================
-std::string trim(const std::string &s) {
-    size_t start = s.find_first_not_of(" \t\r\n");
-    size_t end = s.find_last_not_of(" \t\r\n");
-    if (start == std::string::npos) return "";
-    return s.substr(start, end - start + 1);
-}
-
-// =====================================================
-// Leitura do arquivo de configuração
-// =====================================================
-bool load_config(const std::string &filename, std::string &algoritmo, int &quantum,
-                 std::vector<Process> &processes) {
+// carrega config: 1a linha "ALGO;quantum", demais: "id;cor;ingresso;duracao;prioridade;eventos"
+static bool load_config(const std::string &filename, std::string &alg, int &quantum,
+                        std::vector<Process> &processes) {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Erro: não foi possível abrir o arquivo " << filename << std::endl;
+        std::cerr << "Erro: não foi possível abrir " << filename << "\n";
         return false;
     }
 
-    std::string line;
-    int line_num = 0;
+    std::string line; int line_num = 0;
     while (std::getline(file, line)) {
         line = trim(line);
-        if (line.empty() || line[0] == '#') continue; // ignora comentários e linhas vazias
+        if (line.empty() || line[0] == '#') continue;
 
         std::stringstream ss(line);
-        std::string token;
-        std::vector<std::string> tokens;
-        while (std::getline(ss, token, ';')) tokens.push_back(trim(token));
+        std::string token; std::vector<std::string> tks;
+        while (std::getline(ss, token, ';')) tks.push_back(trim(token));
 
         if (line_num == 0) {
-            // Primeira linha: algoritmo;quantum
-            if (tokens.size() >= 1) algoritmo = to_upper(tokens[0]);
-            if (tokens.size() >= 2) {
-                try { quantum = std::stoi(tokens[1]); }
-                catch (...) { quantum = 1; }
-            } else quantum = 1;
+            alg = tks.size() >= 1 ? to_upper(tks[0]) : "FIFO";
+            if (tks.size() >= 2) { try { quantum = std::stoi(tks[1]); } catch (...) { quantum = 1; } }
+            else quantum = 1;
         } else {
-            // Demais linhas: id;cor;ingresso;duracao;prioridade;eventos
             Process p;
-            try {
-                p.id = tokens.size() > 0 ? tokens[0] : "T" + std::to_string(line_num);
-                p.color = tokens.size() > 1 && !tokens[1].empty() ? tokens[1] : "#CCCCCC";
-                p.arrival_time = tokens.size() > 2 ? std::stoi(tokens[2]) : 0;
-                p.duration = tokens.size() > 3 ? std::stoi(tokens[3]) : 1;
-                p.priority = tokens.size() > 4 ? std::stoi(tokens[4]) : 1;
-                p.events = tokens.size() > 5 ? tokens[5] : "-";
-            } catch (...) {
-                std::cerr << "Aviso: erro ao ler linha " << line_num + 1
-                          << ". Usando valores padrão." << std::endl;
-            }
+            p.id     = tks.size() > 0 && !tks[0].empty() ? tks[0] : ("T" + std::to_string(line_num));
+            p.color  = tks.size() > 1 && !tks[1].empty() ? tks[1] : "#cccccc";
+            try { p.arrival_time = tks.size() > 2 ? std::stoi(tks[2]) : 0; } catch (...) { p.arrival_time = 0; }
+            try { p.duration     = tks.size() > 3 ? std::stoi(tks[3]) : 1; } catch (...) { p.duration     = 1; }
+            try { p.priority     = tks.size() > 4 ? std::stoi(tks[4]) : 1; } catch (...) { p.priority     = 1; }
+            p.events = tks.size() > 5 ? tks[5] : "-";
             processes.push_back(p);
         }
         ++line_num;
@@ -75,79 +54,61 @@ bool load_config(const std::string &filename, std::string &algoritmo, int &quant
     return true;
 }
 
-// =====================================================
-// Função principal
-// =====================================================
 int main(int argc, char* argv[]) {
     std::string configPath = "config_exemplo.txt";
-    std::string mode = ""; // "step" ou "run"
+    std::string mode; // "step" | "run"
     bool modo_passos = false;
 
-    // -------------------------------------------------
-    // Leitura dos argumentos de linha de comando
-    // -------------------------------------------------
+    // CLI
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];
         if ((a == "--config" || a == "-c") && i + 1 < argc) configPath = argv[++i];
-        else if ((a == "--mode" || a == "-m") && i + 1 < argc) mode = argv[++i];
+        else if ((a == "--mode"   || a == "-m") && i + 1 < argc) mode = argv[++i];
         else if (a == "--help" || a == "-h") {
             std::cout << "Uso: simulador --config <arquivo> --mode step|run\n"
-                      << "Algoritmos disponíveis: FIFO, SRTF, PRIORIDADE\n"
-                      << "Observação: quantum é ignorado por FIFO/SRTF.\n";
+                      << "Algoritmos: FIFO, SRTF, PRIORIDADE\n"
+                      << "Obs.: quantum e' ignorado por FIFO/SRTF.\n";
             return 0;
         }
     }
 
-    std::string algoritmo;
-    int quantum = 1;
-    std::vector<Process> processes;
+    std::string algoritmo; int quantum = 1; std::vector<Process> processes;
+    if (!load_config(configPath, algoritmo, quantum, processes)) return 1;
 
-    if (!load_config(configPath, algoritmo, quantum, processes)) {
-        std::cerr << "Falha ao carregar a configuração.\n";
-        return 1;
-    }
-
-    // -------------------------------------------------
-    // Definição do modo de execução
-    // -------------------------------------------------
+    // modo (menu como fallback)
     if (mode.empty()) {
-        std::cout << "Escolha o modo de execução:\n"
-                  << "1. Passo a Passo\n2. Completo\n> ";
-        int escolha;
-        std::cin >> escolha;
+        std::cout << "Escolha o modo de execução:\n1. Passo a Passo\n2. Completo\n> ";
+        int escolha; std::cin >> escolha;
+
+        // drena o '\n' do >> para o primeiro getline do step não pular
+if (std::cin.peek() == '\n')
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         modo_passos = (escolha == 1);
     } else {
-        std::string up = to_upper(mode);
-        modo_passos = (up == "STEP");
+        modo_passos = (to_upper(mode) == "STEP");
     }
 
-    std::cout << "\n=== Simulador de Escalonamento ===\n"
-              << "Arquivo: " << configPath
-              << "\nAlgoritmo: " << algoritmo
-              << "\nQuantum: " << quantum
-              << "\nModo: " << (modo_passos ? "Passo-a-Passo" : "Completo") << "\n\n";
+    // resumo
+    show_processes(processes);
+    std::cout << "\nAlgoritmo: " << algoritmo
+              << " | Quantum: " << quantum
+              << " | Modo: " << (modo_passos ? "Passo-a-Passo" : "Completo") << "\n";
 
-    // -------------------------------------------------
-    // Seleção do algoritmo
-    // -------------------------------------------------
+    // despacha algoritmo
     if (algoritmo == "FIFO") {
         simulate_fifo(processes, modo_passos);
     } else if (algoritmo == "SRTF") {
         simulate_srtf(processes, modo_passos);
-    } else if (algoritmo == "PRIORIDADE" || algoritmo == "PRIOP" || algoritmo == "PRIO") {
+    } else if (algoritmo == "PRIORIDADE" || algoritmo == "PRIO" || algoritmo == "PRIOP") {
         simulate_prio_preemptivo(processes, modo_passos, quantum);
     } else {
-        std::cerr << "Erro: algoritmo '" << algoritmo
-                  << "' não reconhecido.\nUse FIFO, SRTF ou PRIORIDADE.\n";
+        std::cerr << "Algoritmo '" << algoritmo << "' não reconhecido. Use FIFO, SRTF ou PRIORIDADE.\n";
         return 1;
     }
 
-    // -------------------------------------------------
-    // Exportação do gráfico de Gantt ao final
-    // -------------------------------------------------
+    // Gantt
     std::cout << "\nGerando gráfico de Gantt em ./output/gantt.svg ...\n";
     generate_gantt(processes, "output/gantt.svg");
-    std::cout << "Simulação concluída.\n";
-
+    std::cout << "Concluído.\n";
     return 0;
 }
